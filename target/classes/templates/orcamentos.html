@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Orçamentos</title>
+<link rel="stylesheet"
+	th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}">
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/1.11.2/css/jquery.dataTables.css">
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="/home">home</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarNav" aria-controls="navbarNav"
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<li class="nav-item"><a class="nav-link" href="/orcamentos">Listar
+						Orçamentos</a></li>
+				<li class="nav-item"><a class="nav-link" href="/criarOrcamento">Criar
+						Orçamento</a></li>
+				<li class="nav-item"><a class="nav-link" href="/search">Buscar
+						Orçamento</a></li>
+				<li class="nav-item"><a class="nav-link float-right"
+					href="/logout">logout</a></li>
+			</ul>
+		</div>
+	</nav>
+	<hr />
+	<br />
+
+	<div class="container">
+		<div class="card">
+			<div class="card-header">
+				<a href="/criarOrcamento" th:href="@{/criarOrcamento}"
+					class="btn btn-sm btn-success float-right" title="Criar Orcamento."><i
+					class="fas fa-plus"></i> Criar Orcamento</a>
+
+			</div>
+			<br />
+
+			<div class="card-body">
+
+
+				<table id="table_id">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Data Criação</th>
+							<th>Criado por</th>
+							<th>Nome Cliente</th>
+							<th>Expira em</th>
+							<th>Valor Total</th>
+							<th>Qtd itens</th>
+							<th>Qtd peças</th>
+							<th>Ações</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr th:if="${orcamentos.empty}">
+							<td colspan="12" class="text-center">Nenhum orçamento
+								cadastrado.</td>
+						</tr>
+						<tr th:each="orcamento : ${orcamentos}">
+							<td th:text="${orcamento.id}"></td>
+							<td
+								th:text="${#temporals.format(orcamento.dataCriacao, 'dd-MM-yyyy')}"></td>
+							<td th:text="${orcamento.nomeVendedor}"></td>
+							<td th:text="${orcamento.nomeCliente}"></td>
+							<td
+								th:text="${#temporals.format(orcamento.dataExpiracao, 'dd-MM-yyyy')}"></td>
+							<td th:text="${orcamento.valorTotal}"></td>
+							<td th:text="${orcamento.qtdProd}"></td>
+							<td th:text="${orcamento.qtdPecas}"></td>
+
+							<td><div class="btn-group">
+									<a th:href="@{'/editarOrcamento/' + ${orcamento.id}}"
+										class="btn btn-sm btn-info bg-orange mr-2"
+										title="Editar Orçamento."> <i class="fas fa-user-edit"></i></a><a
+										th:href="@{'/orcamentoDelete/' + ${orcamento.id}}"
+										class="btn btn-sm btn-danger bg-red mr-2 delBtn"
+										title="Deletar Orçamento: Apenas gerentes."><i
+										class="far fa-trash-alt"></i> </a>
+								</div></td>
+							<!--if="${#authorization.expression('hasAuthority(''GERENTE'')')}"
+  esconde o botão, mas a função ainda funciona pela URL -->
+						</tr>
+					</tbody>
+				</table>
+				<div class="row justify-content-center">
+					<div th:if="${errorMessage}"
+						class="alert alert-danger alert-dismissible fade show"
+						role="alert">
+						<strong>Erro:</strong> <span th:text="${errorMessage}">Erro</span>
+						<button type="button" class="close" data-dismiss="alert"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+
+					<div th:if="${successMessage}"
+						class="alert alert-success alert-dismissible fade show"
+						role="alert">
+						<strong>Sucesso:</strong> <span th:text="${successMessage}">Successo</span>
+						<button type="button" class="close" data-dismiss="alert"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<script type="text/javascript"
+		th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<script th:src="@{/js/rowDinamicaPedido.js}"></script>
+	<script type="text/javascript" charset="utf8"
+		src="https://cdn.datatables.net/1.11.2/js/jquery.dataTables.js"></script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		window.onload = function() {
+
+			$(document)
+					.ready(
+							function() {
+								$('#table_id')
+										.DataTable(
+												{
+													"language" : {
+
+														"emptyTable" : "Nenhum registro encontrado",
+														"info" : "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+														"infoEmpty" : "Mostrando 0 até 0 de 0 registros",
+														"infoFiltered" : "(Filtrados de _MAX_ registros)",
+														"infoThousands" : ".",
+														"loadingRecords" : "Carregando...",
+														"processing" : "Processando...",
+														"zeroRecords" : "Nenhum registro encontrado",
+														"search" : "Pesquisar",
+														"lengthMenu" : "Exibir _MENU_ resultados por página",
+														"paginate" : {
+															"next" : "Próximo",
+															"previous" : "Anterior",
+															"first" : "Primeiro",
+															"last" : "Último"
+														}
+													},
+													"columnDefs" : [ {
+														"orderable" : false,
+														"targets" : 8
+													//n° da coluna para desativar ordenação
+													} ],
+													order : [ 1, 'asc' ]
+												});
+							});
+
+		};
+
+		/*]]>*/
+	</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Orçamentos</title>
+<link rel="stylesheet"
+	th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}">
+<style>
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th,
+	.table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td,
+	.table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+	padding: 5px;
+}
+</style>
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="/home">home</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarNav" aria-controls="navbarNav"
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<li class="nav-item"><a class="nav-link" href="/orcamentos">Listar
+						Orçamentos</a></li>
+				<li class="nav-item"><a class="nav-link" href="/criarOrcamento">Criar
+						Orçamento</a></li>
+				<li class="nav-item"><a class="nav-link" href="/search">Buscar
+						Orçamento</a></li>
+				<li class="nav-item"><a class="nav-link float-right"
+					href="/logout">logout</a></li>
+			</ul>
+		</div>
+	</nav>
+	<hr />
+	<br />
+	<div class="container">
+
+
+		<div class="card">
+			<div class="card-header">
+				Sistema de orçamentos 
+			</div>
+			<div class="card-body">
+				<div class="row justify-content-center">
+					<h5 class="card-title">Busca de orçamentos</h5>
+				</div>
+
+				<div class="card-body">
+					<form>
+						<span class="subtitle">Busque pelo nome do cliente</span>
+						<div class="input-group mb-3">
+							<input placeholder="digite o nome..." class="form-control form-control-sm col-md-6" type="text"
+								id="searchSurname" name="searchSurname" />
+							<div class="input-group-append">
+								<button id="searchButton" name="searchButton"
+									onclick="getOrcamentos()" type="button" >
+									<i class="fas fa-search"></i> Buscar
+								</button>
+							</div>
+						</div>
+						<hr />
+						<br />
+						<!-- Results block -->
+						<div id="resultsBlock"></div>
+					</form>
+					<br />
+
+
+					<div th:fragment="resultsList"
+						th:unless="${#lists.isEmpty(orcamentos)}" class="results-block">
+						<table
+							class="table table-condensed table-condensed-sm table-bordered">
+							<thead>
+								<tr>
+									<th>Orcamento-Id</th>
+									<th>Nome do Cliente</th>
+									<th>Endereço</th>
+									<th>Pedidos</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="orcamento : ${orcamentos}">
+									<td th:text="${orcamento.id}">id</td>
+									<td th:text="${orcamento.nomeCliente}">id</td>
+									<td th:text="${orcamento.endereco}">id</td>
+									<td>
+										<table
+											class="table table-condensed table-condensed-sm table-bordered">
+											<tr>
+												<th>#</th>
+												<th>Produto</th>
+												<th>$</th>
+												<th>qtd</th>
+												<th>-%</th>
+
+
+											</tr>
+											<tr th:each="pedido : ${orcamento.pedidoList}">
+												<td th:text="${pedido.sequenceNumber}">Sequência</td>
+												<td th:text="${pedido.nomeProduto}">Produto</td>
+												<td th:text="${pedido.precoUnitario}">Preço Unitário</td>
+												<td th:text="${pedido.qtd}">Quantidade</td>
+												<td th:text="${pedido.desconto}">Desconto</td>
+										</table>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript"
+		th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<script>
+		function getOrcamentos() {
+			var url = '/orcamentos';
+
+			//     if ($('#searchFirstname').val() != '') {
+			url = url + '/' + $('#searchSurname').val();
+			//     }
+
+			$("#resultsBlock").load(url);
+		}
+	</script>
+	s
+</body>
+</html>
